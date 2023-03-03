@@ -5,6 +5,7 @@ COPY package.json yarn.lock ./
 RUN yarn install --production --pure-lockfile && \
     yarn cache clean
 
+
 FROM base as build
 WORKDIR /usr/src/wpp-server
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
