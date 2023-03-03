@@ -6,22 +6,36 @@ volumes:
 
 services:
   wppconnect:
-    build:
-      context: .
+    container_name: server-1
+    image: wppconnect/server-cli:latest
     deploy:
-        labels:
-          - traefik.enable=true
-          - traefik.docker.network=traefik-public
-          - traefik.http.routers.whatsapp-server.entrypoints=https
-          - traefik.http.routers.whatsapp-server.rule=Host(`whatsapp-server.divulgamais.site`)
-          - traefik.http.routers.whatsapp-server.tls=true
-          - traefik.http.routers.whatsapp-server.tls.certresolver=le
-          - traefik.http.services.whatsapp-server.loadbalancer.server.port=8098
+      placement:
+        constraints:
+          - node.role==manager
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
+        - traefik.http.routers.whatsapp-server-1-http.entrypoints=http
+        - traefik.http.routers.whatsapp-server-1-http.rule=Host(`wpp-server-1.divulgamais.site`)
+        - traefik.http.routers.whatsapp-server-1.entrypoints=https
+        - traefik.http.routers.whatsapp-server-1.rule=Host(`wpp-server-1.divulgamais.site`)
+        - traefik.http.routers.whatsapp-server-1.tls=true
+        - traefik.http.routers.whatsapp-server-1.tls.certresolver=le
+        - traefik.http.services.whatsapp-server-1.loadbalancer.server.port=8098
 
     volumes:
-      - ./config.json:/usr/src/wpp-server/config.json
       - wppconnect_tokens:/usr/src/wpp-server/tokens
       - wppconnect_server_1:/userDataDir
-    
+    command:
+      - --secretKey=e3b0e4b8-7670-47b6-8543-47f869ccc90e
+      - --port=8098
+      - --startAllSession
+    networks:
+      - traefik-public
+
     ports:
       - "8098:8098"
+networks:
+  traefik-public:
+    external: true
