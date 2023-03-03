@@ -17,9 +17,11 @@ services:
           - traefik.http.routers.whatsapp-server.tls=true
           - traefik.http.routers.whatsapp-server.tls.certresolver=le
           - traefik.http.services.whatsapp-server.loadbalancer.server.port=8098
+
     volumes:
       - ./config.json:/usr/src/wpp-server/config.json
       - wppconnect_tokens:/usr/src/wpp-server/tokens
       - wppconnect_server_1:/userDataDir
+    
     ports:
       - "8098:8098"
